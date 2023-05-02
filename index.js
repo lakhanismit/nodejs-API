@@ -6,15 +6,14 @@ const path = require('path');
 
 const db = require('./config/db');
 
+const cookie = require('cookie-parser');
+
 const userRoutes = require('./routes/user.routes')
 const authRoutes = require('./routes/auth.routes')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-
-// app.get('/', (req, res) => {
-//     res.send('hi')
-// })
+app.use(cookie())
 
 app.use('/uploads', express.static(path.join('uploads')))
 

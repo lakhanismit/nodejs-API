@@ -41,15 +41,17 @@ const updateUser = async (req, res) => {
     try {
         const { params: { id }, body: { name, email, password } } = req
         if (req.file) {
+            const oneData = await userModel.findOne({ where: { id } })
+            
+            if (oneData.avtar !== "uploads/default.png") {
+                fs.unlinkSync(oneData.avtar)
+            }
+
             let avtar = `${imgPath}/${req.file.filename}`;
-            const data = await userModel.update(Object.assign({ avtar }, { name, email, password }), { where: { id } })
-            if (data && data.avtar !== 'uploads/default.png') {
-                fs.unlinkSync(data.avtar)
-                return res.status(200).json({ success: true, data: data, msg: `data is update on id :- ${id}` })
-            }
-            if (!data) {
-                return res.status(404).json({ success: false, msg: `${id} is not register as id` })
-            }
+            const data = await userModel.update({ name, email, password, avtar }, { where: { id } });
+
+            return res.status(200).json({ success: true, data: data, msg: `data is update on id :- ${id}` })
+
         } else {
             const data = await userModel.update({ name, email, password }, { where: { id } })
             if (!data) {
@@ -58,7 +60,7 @@ const updateUser = async (req, res) => {
             res.status(200).json({ success: true, data: data, msg: `data is update on id :- ${id}` })
         }
     } catch (error) {
-        res.status(500).json({ success: false, msg: `data not update`+error.message })
+        res.status(500).json({ success: false, msg: `data not update` + error.message })
     }
 }
 

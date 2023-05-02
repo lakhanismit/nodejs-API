@@ -4,6 +4,7 @@ const db = require('../config/db');
 const authModel = db.User
 const bcrypt = require('bcrypt');
 const secret = process.env.JWT_SECRET
+const nodemailer = require('nodemailer');
 
 const login = async (req, res) => {
     try {
@@ -43,4 +44,61 @@ const logout = async (req, res) => {
     }
 }
 
-module.exports = { login, logout }
+const forgot = async (req, res) => {
+    try {
+        const { body: { email } } = req;
+
+        const oneData = await authModel.findOne({ where: { email } });
+        const id = oneData.id;
+        if (!oneData) {
+            return res.status(404).json({ success: false, msg: "Email Not Found" });
+        } else {
+            let otp = Math.floor(Math.random() * 1000000);
+
+            let obj = { email, otp, id }
+            const transpoter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 587,
+                secure: false,
+                auth: {
+                    user: "smitlakhani2062002@gmail.com",
+                    pass: "tequaszrhrezreqw"
+                }
+            });
+
+            let mailoptions = {
+                from: "smitlakhani2062002@gmail.com",
+                to: email,
+                subject: "For Your Reset Password Mail Form Final_Api",
+                text: `Your One Time Password(OTP) is :- ${otp}`,
+            };
+
+            transpoter.sendMail(mailoptions, (err, info) => {
+                if (err) {
+                    console.log(err.message);
+                } else {
+                    res.cookie("otp_obj", obj);
+                    console.log(`Email Sent Successfully To ${email}_${info.response}`);
+                    return res.status(200).json({ success: true, msg: "Otp send Successfully" });
+                }
+            });
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, msg: "Error in server at Forgot Password" + error.message });
+    }
+}
+
+const checkOtp = async (req, res) => {
+    try {
+        const { body: { otp } } = req;
+        console.log(req.cookies.otp_obj.otp);
+        if(otp == req.cookies.otp_obj.otp){
+            console.log("done");
+        }
+
+    } catch (error) {
+        res.status(500).json({ success: false, msg: "Error in server at chackOtp" + error.message });
+    }
+}
+
+module.exports = { login, logout, forgot, checkOtp }
