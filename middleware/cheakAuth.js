@@ -18,7 +18,7 @@ const checkAuth = async (req, res, next) => {
             });
             isToken = isToken.toJSON();
             if (!isToken) {
-                return res.status(401).json({ success: false, msg: "unauthorized" });
+                return res.status(401).json({ success: false, msg: `unauthorized` });
             }
 
             jwt.verify(token, secret, (err, decode) => {
@@ -32,7 +32,7 @@ const checkAuth = async (req, res, next) => {
                 next();
             });
         } catch (error) {
-            return res.status(401).json({ success: false, msg: error })
+            return res.status(401).json({ success: false, msg: `Please login first - ${error.message}` })
         }
     }
 }

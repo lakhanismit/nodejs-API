@@ -36,9 +36,7 @@ const logout = async (req, res) => {
         await db.user_Session.destroy({
             where: { user_id: id }
         });
-
-        res.status(200).json({ success: true, msg: "Token Delete Successfully and User Logged out Successfully", });
-
+        res.status(200).json({ success: true, msg: `User Logged out Successfully on ${id}` });
     } catch (error) {
         res.status(500).json({ success: false, msg: "Error in server at logout" + error.message });
     }
@@ -62,7 +60,7 @@ const forgot = async (req, res) => {
                 secure: false,
                 auth: {
                     user: "smitlakhani2062002@gmail.com",
-                    pass: "tequaszrhrezreqw"
+                    pass: "orwgfcuikwfridhc"
                 }
             });
 
@@ -78,6 +76,7 @@ const forgot = async (req, res) => {
                     console.log(err.message);
                 } else {
                     res.cookie("otp_obj", obj);
+                    console.log(`otp = ${otp}`);
                     console.log(`Email Sent Successfully To ${email}_${info.response}`);
                     return res.status(200).json({ success: true, msg: "Otp send Successfully" });
                 }
@@ -91,14 +90,36 @@ const forgot = async (req, res) => {
 const checkOtp = async (req, res) => {
     try {
         const { body: { otp } } = req;
-        console.log(req.cookies.otp_obj.otp);
-        if(otp == req.cookies.otp_obj.otp){
-            console.log("done");
+        if (otp == req.cookies.otp_obj.otp) {
+            res.cookie('checks', otp)
+            return res.status(200).json({ success: true, msg: "Your otp is check successfully" });
         }
-
+        res.status(404).json({ success: false, msg: "Your otp is not matched" });
     } catch (error) {
         res.status(500).json({ success: false, msg: "Error in server at chackOtp" + error.message });
     }
 }
 
-module.exports = { login, logout, forgot, checkOtp }
+const resetPassword = async (req, res) => {
+    try {
+        if (req.cookies.checks) {
+            const { body: { password, cpassword } } = req
+            if (password == cpassword) {
+                let id = req.cookies.otp_obj.id
+                const reset = await authModel.update({ password }, { where: { id } })
+                if (reset) {
+                    res.clearCookie("otp_obj")
+                    res.clearCookie("checks")
+                    return res.status(200).json({ success: true, msg: `password update on id :- ${id}` })
+                }
+            }
+            return res.status(400).json({ success: false, msg: `password and cpassword not match` })
+        }else{
+            return res.status(400).json({ success: false, msg: `first enter otp bro otherwise you not able to update password` })
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, msg: `Error in reset password - ${error.message}` })
+    }
+}
+
+module.exports = { login, logout, forgot, checkOtp, resetPassword }

@@ -26,10 +26,12 @@ db.User = require('../models/user.model')(sequelize, Sequelize)
 
 // User session model
 db.user_Session = require('../models/userSession.model')(sequelize, Sequelize)
-
 // User relation ship
 db.User.hasMany(db.user_Session, { foreignKey: "user_id" })
 db.user_Session.belongsTo(db.User, { foreignKey: "user_id" });
+
+// Add slider
+db.Slider = require('../models/user/slider.model')(sequelize, Sequelize)
 
 
 // db.sequelize.sync({force : false})
