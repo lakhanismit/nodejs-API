@@ -11,6 +11,7 @@ const cookie = require('cookie-parser');
 const userRoutes = require('./routes/user.routes')
 const authRoutes = require('./routes/auth.routes')
 const sliderRoutes = require('./routes/user/slider.routes')
+const recentPostRoutes = require('./routes/user/recentpost.routes')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -21,5 +22,6 @@ app.use('/uploads', express.static(path.join('uploads')))
 app.use('/api/v1/user', userRoutes)
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/slider', sliderRoutes)
+app.use('/api/v1/post', recentPostRoutes)
 
 app.listen(port, () => console.log(`Server start on port :- ${port}`))

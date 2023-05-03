@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const sliderSchma = sequelize.define('recent-post', {
+    const postSchma = sequelize.define('recent-post', {
         title: {
             type: Sequelize.DataTypes.STRING,
             allowNull: false
@@ -8,12 +8,16 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DataTypes.STRING,
             allowNull: false
         },
-        avtar:{
+        avtar: {
             type: Sequelize.DataTypes.STRING,
             allowNull: false
+        },
+        status: {
+            type: Sequelize.DataTypes.INTEGER,
+            defaultValue: 1
         }
     }, {
         tableName: 'recent-post'
     });
-    return sliderSchma;
+    return postSchma;
 }

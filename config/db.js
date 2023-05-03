@@ -33,6 +33,9 @@ db.user_Session.belongsTo(db.User, { foreignKey: "user_id" });
 // Add slider
 db.Slider = require('../models/user/slider.model')(sequelize, Sequelize)
 
+// Add Recent post
+db.RecentPost = require('../models/user/recentpost.model')(sequelize, Sequelize)
+
 
 // db.sequelize.sync({force : false})
 
