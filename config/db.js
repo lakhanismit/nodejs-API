@@ -36,6 +36,9 @@ db.Slider = require('../models/user/slider.model')(sequelize, Sequelize)
 // Add Recent post
 db.RecentPost = require('../models/user/recentpost.model')(sequelize, Sequelize)
 
+// Add Blog
+db.Blog = require('../models/user/blog.model')(sequelize, Sequelize)
+
 
 // db.sequelize.sync({force : false})
 
