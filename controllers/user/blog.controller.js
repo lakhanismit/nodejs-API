@@ -41,4 +41,50 @@ const viewAllBlog = async (req, res) => {
     }
 }
 
-module.exports = { addBlog, deleteBlog, viewAllBlog }
+const updateBlog = async (req, res) => {
+    try {
+        const { params: { id }, body: { title, description, date, author, avtar } } = req
+        if (req.file) {
+            const oneData = await blogModel.findOne({ where: { id } })
+            if (oneData) {
+                fs.unlinkSync(oneData.avtar)
+            }
+
+            let avtar = `${imgPath}/${req.file.filename}`;
+            const data = await blogModel.update({ title, description, date, author, avtar }, { where: { id } });
+
+            return res.status(200).json({ success: true, data: data, msg: `Blog data is update on id :- ${id}` })
+
+        } else {
+            const data = await blogModel.update({ title, description, date, author, avtar }, { where: { id } })
+            if (!data) {
+                return res.status(404).json({ success: false, msg: `${id} is not register as id` })
+            }
+            res.status(200).json({ success: true, data: data, msg: `Blog data is update on id :- ${id}` })
+        }
+    } catch (error) {
+        res.status(500).json({ success: false, msg: `Blog data is not update` + error.message })
+    }
+}
+
+const deactive = async (req, res) => {
+    try {
+        const { params: { id } } = req
+        await blogModel.update({ status: '0' }, { where: { id } })
+        res.status(200).json({ success: true, msg: `Blog data is deactived on id :- ${id}` })
+    } catch (error) {
+        res.status(500).json({ success: false, msg: `Blog data is not deactive` + error.message })
+    }
+}
+
+const active = async (req, res) => {
+    try {
+        const { params: { id } } = req
+        await blogModel.update({ status: '1' }, { where: { id } })
+        res.status(200).json({ success: true, msg: `Blog data is actived on id :- ${id}` })
+    } catch (error) {
+        res.status(500).json({ success: false, msg: `Blog data is not active` + error.message })
+    }
+}
+
+module.exports = { addBlog, deleteBlog, viewAllBlog, updateBlog, deactive, active }
